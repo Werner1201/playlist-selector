@@ -212,7 +212,7 @@ def choose_playlists():
             final = True
             aux_tuple = split_array(string_arr)
             aux_last_edit = int(
-                input("Do you want to Edit anything ? 1-Yes,0-No"))
+                input("Do you want to Edit anything ? 1-Yes,0-No: "))
             if aux_last_edit == 1:
                 aux_tuple = config_editing(aux_tuple)
             create_json_config_file(create_json_config(
@@ -241,7 +241,9 @@ def old_user_options():
     if choice == 1:
         playlist_seletor()
     if choice == 2:
-        config_editing(jsonToTuple())
+        aux_tuple = config_editing(jsonToTuple())
+        create_json_config_file(create_json_config(
+            config_dict_template(aux_tuple[0], aux_tuple[1])))
 
 
 def old_user_workflow():
