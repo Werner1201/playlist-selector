@@ -8,9 +8,8 @@ import json
 
 def execute_mpv_command(command):
     sys.stdout.flush()
-    _ = subprocess.Popen(
-        command, shell=False,
-        stdout=sys.stdout, stderr=sys.stderr).communicate()
+    _ = subprocess.call(
+        command, shell=True)
 
 # TODO: Make this function Read the Json Config File and Print the List and
 # Execute mpv with the date from json.
@@ -36,7 +35,7 @@ def playlist_seletor():
           "\n9-0 Abaixa e Aumenta o Volume" +
           "\nP- Pausa a música" +
           "\nEnter-Vai pra próxima música" +
-          "\nCtrl+C = Fecha o programa\n")
+          "\nQ = Fecha o programa\n")
     if escolha == 1:
         commando = shlex.split(
             command + "list=PLiZj_IL8ze6Vp8-5ZgKagH-LuPor6BPic")
