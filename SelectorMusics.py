@@ -4,110 +4,84 @@ import platform
 import subprocess
 import shlex
 import json
+from typing import TypeVar
 
 
-def execute_mpv_command(command):
+# Setting to let the function return both types
+T = TypeVar('T', int, str)
+
+
+def execute_mpv_command(command: list) -> None:
+    """
+    This function let's the user see the MPV terminal "ui" and controll it
+    And Refreshes the stdout before showing it.
+    """
     sys.stdout.flush()
     _ = subprocess.call(
         command, shell=True)
 
-# TODO: Make this function Read the Json Config File and Print the List and
-# Execute mpv with the date from json.
 
-
-def playlist_seletor():
-    escolha = 0
-    yturl = "https://www.youtube.com/playlist?"
-    command = "mpv --no-video " + yturl
-    print("Qual dos estilos, quer escutar ?")
-    print("\n1-Rock/PopRock")
-    print("\n2-Lofi hip-hop lonley music")
-    print("\n3-Eletrónica")
-    print("\n4-Aleatório, todas juntas")
-    print("\n5-RAP NANA")
-    print("\n6-ASMR")
-    escolha = int(input("\nDigite: "))
+def clean_prompt() -> None:
+    """
+    Auxiliary Function
+    It's use is to check the user's system os and selects the correct system
+    clear command in the cli.
+    """
     if platform.system() == 'Linux':
         os.system('clear')
     else:
         os.system('cls')
-    print("Intruções:" +
-          "\n9-0 Abaixa e Aumenta o Volume" +
-          "\nP- Pausa a música" +
-          "\nEnter-Vai pra próxima música" +
-          "\nQ = Fecha o programa\n")
-    if escolha == 1:
-        commando = shlex.split(
-            command + "list=PLiZj_IL8ze6Vp8-5ZgKagH-LuPor6BPic")
-        execute_mpv_command(commando)
-        if platform.system() == 'Linux':
-            os.system('clear')
+
+
+def playlist_seletor() -> int:
+    """
+    Core Function
+    It's use is where the name comes from
+    It allows the user to reproduce their youtube playlists
+    Reading the config.json it shows the list and lets the user select
+    the playlist they want to play.
+    Runs in a loop to let the user select other playlists if they want to.
+    """
+    playlists = jsonToTuple()
+    name_arr = playlists[0]
+    link_arr = playlists[1]
+    choice = 0
+    program = "mpv --no-video "
+    end = False
+    while not end:
+        clean_prompt()
+        print("Which of the playlists do you want to listen?")
+        for name in name_arr:
+            print(f"\n{name_arr.index(name)+1}- {name}")
+
+        choice = int(input("\nChoose: "))
+        clean_prompt()
+        print("Intructions:" +
+              "\n9-0-: Lowers and Inscreases the Volume" +
+              "\nP-: Stops the Music" +
+              "\nEnter-: Next Music" +
+              "\nQ-: Closes Playlist\n")
+
+        command = shlex.split(program + link_arr[choice-1])
+        execute_mpv_command(command)
+        clean_prompt()
+        if int(input("Do you want to listen more ? 1 - Yes, 0 - No: ")) == 0:
+            end = True
+            return 0
         else:
-            os.system('cls')
-        main()
-
-    if escolha == 2:
-        commando = shlex.split(
-            command +
-            "list=PLiZj_IL8ze6XZkvrrxPO6LGVt1jj8TybQ")
-
-        execute_mpv_command(commando)
-        if platform.system() == 'Linux':
-            os.system('clear')
-        else:
-            os.system('cls')
-        main()
-
-    if escolha == 3:
-        commando = shlex.split(
-            command +
-            "list=PLiZj_IL8ze6Visa1jD9zWhwO9og6z6uw_")
-        execute_mpv_command(commando)
-        if platform.system() == 'Linux':
-            os.system('clear')
-        else:
-            os.system('cls')
-        main()
-
-    if escolha == 4:
-        commando = shlex.split(
-            command +
-            "list=PLiZj_IL8ze6U8rETvvf6DvszB83NQQmo1")
-        execute_mpv_command(commando)
-        if platform.system() == 'Linux':
-            os.system('clear')
-        else:
-            os.system('cls')
-        main()
-
-    if escolha == 5:
-        commando = shlex.split(
-            command +
-            "list=PLiZj_IL8ze6VbQZdY-kFUpHKaB4qA7q2w")
-        execute_mpv_command(commando)
-        if platform.system() == 'Linux':
-            os.system('clear')
-        else:
-            os.system('cls')
-        main()
-
-    if escolha == 6:
-        commando = shlex.split(
-            command +
-            "list=PLiZj_IL8ze6Um1PLTpHq8KoLltPJ_m043")
-
-        execute_mpv_command(commando)
-        if platform.system() == 'Linux':
-            os.system('clear')
-        else:
-            os.system('cls')
-        main()
-
-    if escolha == 0 or escolha > 6:
-        os.system("pause")
+            end = False
 
 
-def config_editing(playlist_tuples):
+def config_editing(playlist_tuples: tuple) -> tuple:
+    """
+    Optional Function
+    It's use is multiple inside and outside
+    It was adapted to work to new config needs
+    If the user wants to edit some thing inside their first config
+    Without having to save before editing this function allows it
+    But it allows to edit already saved files via the auxiliary fucntion
+    JsonToTuple since this function only recieves tuples and returns tuples
+    """
     aux_tuple = 0
     print("\nEDITING PLAYLIST CONFIG MODE: ")
     name_arr = playlist_tuples[0]
@@ -170,7 +144,11 @@ def config_editing(playlist_tuples):
             return playlist_tuples
 
 
-def create_json_config_file(configjson: json):
+def create_json_config_file(configjson: json) -> int:
+    """
+    Third Sequence config Function
+    Just writes the json to the config.json file.
+    """
     filejson = open("config.json", "wt")
     filejson.writelines(configjson)
     filejson.close()
@@ -178,11 +156,17 @@ def create_json_config_file(configjson: json):
 
 
 def create_json_config(configdict: dict) -> json:
+    """Second Sequence config function here it just converts dict to json"""
     configjson = json.dumps(configdict)
     return configjson
 
 
-def config_dict_template(names_arr, links_arr) -> dict:
+def config_dict_template(names_arr: list, links_arr: list) -> dict:
+    """
+    First of the Sequence config Functions
+    it gets the lists from parameters and uses them to create and dict
+    So it can be read by create_json_config
+    """
     configdict = {}
     i = 0
     for name in names_arr:
@@ -191,14 +175,25 @@ def config_dict_template(names_arr, links_arr) -> dict:
     return configdict
 
 
-def comma_verify(text):
+def comma_verify(text: str) -> T:
+    """
+    Verification Function
+    It verifies if inside the text string there's a comma
+    text parameter comes from choose_playlists() input of the new playlists
+    """
     if "," in text:
         return text
     else:
         return 0
 
 
-def split_array(string_arr) -> tuple:
+def split_array(string_arr: list) -> tuple:
+    """
+    Auxiliary function
+    It's purpose is to get an list of strings divided by commas
+    and separte it into 2 lists, one of names and the other of links
+    and return both inside an tuple.
+    """
     names_arr = []
     links_arr = []
     for string in string_arr:
@@ -209,6 +204,11 @@ def split_array(string_arr) -> tuple:
 
 
 def jsonToTuple() -> tuple:
+    """
+    Auxiliary function
+    It's function is to read the config file saving it at jsonFile var and
+    separate the dict into 2 lists inside an tuple.
+    """
     name_arr = []
     link_arr = []
     jsonFile = open("config.json", "rt")
@@ -219,7 +219,15 @@ def jsonToTuple() -> tuple:
     return (name_arr, link_arr)
 
 
-def choose_playlists():
+def choose_playlists() -> int:
+    """
+    Here is the workflow to create and config.json for a first time user
+    it uses an string array to read the values of the user divided by a comma
+    at the end of the editions and after varios checks if the user wants to
+    Edit anything it calls the sequence of fucntions to create the config.json
+    create_json_config_file() <- create_json_config() <- config_dict_template()
+    """
+
     print("Choose the playlists names and their links to"
           + "be added to your config!")
     print("\nPlease type the name and separate the link with a comma ',' :")
@@ -246,45 +254,73 @@ def choose_playlists():
             create_json_config_file(create_json_config(
                 config_dict_template(aux_tuple[0], aux_tuple[1])))
             print("Configurations Concluded!")
+            return 0
 
         if aux_final == 1:
             final = False
             print("Configurations Saved!\n")
 
 
-def new_user_workflow():
+def new_user_workflow() -> int:
+    """
+    Here is the workflow where there's no config.json
+    it returns an int to the controller in the checking_workflow()
+    """
     print("Oh a new user! Welcome to Playlist Selector!\n")
-    choose_playlists()
-    return 0
+    if choose_playlists() == 0:
+        return 0
 
 
-def old_user_options():
+def old_user_options() -> bool:
+    """
+    Here is Where the user can choose what they want the program to do
+    this function is inside an pseudo loop of its own
+    if statements 1 and 2 call the function it self so only the
+    if statement 0 can end the program.
+    """
     print("\nSelect What you want to do:")
     print("\n1 - Listen to the Playlists. ")
     print("\n2 - Edit Playlists")
     print("\n0 - Exit Program")
     choice = int(input("\nChoose: "))
     if choice == 0:
-        os.system("pause")
+        return True
     if choice == 1:
-        playlist_seletor()
+        if playlist_seletor() == 0:
+            clean_prompt()
+            return old_user_options()
     if choice == 2:
         aux_tuple = config_editing(jsonToTuple())
         create_json_config_file(create_json_config(
             config_dict_template(aux_tuple[0], aux_tuple[1])))
+        clean_prompt()
+        return old_user_options()
 
 
 def old_user_workflow():
+    """
+    The primary loop of the old user workflow
+    here is it is controlled by the return of the old_user_options
+    """
     print("Welcome Back!")
-    old_user_options()
+    retorno = False
+    while not retorno:
+        retorno = old_user_options()
     return 0
 
 
 def checking_workflow():
-    if os.path.exists('config.json') is True:
-        old_user_workflow()
-    else:
-        new_user_workflow()
+    """
+    Here there's the main loop for the workflow of the program
+    It checks if there's and config.json
+    True = follows to old_user_workflow()
+    False = follows to new_user_workflow()
+    """
+    while True:
+        if os.path.exists('config.json') is True:
+            return old_user_workflow()
+        else:
+            new_user_workflow()
 
 
 def main():
