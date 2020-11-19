@@ -12,7 +12,7 @@ def execute_mpv_command(command):
         stdout=sys.stdout, stderr=sys.stderr).communicate()
 
 
-def seletor():
+def playlist_seletor():
     escolha = 0
     yturl = "https://www.youtube.com/playlist?"
     command = "mpv --no-video " + yturl
@@ -79,6 +79,69 @@ def seletor():
         os.system("pause")
 
 
+def config_editing(playlist_tuples):
+    aux_tuple = 0
+    print("\nEDITING PLAYLIST CONFIG MODE: ")
+    name_arr = playlist_tuples[0]
+    link_arr = playlist_tuples[1]
+    end = False
+    while not end:
+        print(f"\nConfig Has {len(name_arr)} Entries: ")
+        index = 0
+        for string in name_arr:
+            print(f"Playlist #{index+1}: {string},{link_arr[index]}\n")
+            index += 1
+        choiceEntry = int(
+            input("\nWhich Entry do you want to Edit ? Type Number: "))
+        choiceType = int(input(f"\nWhich Type of Entry #{choiceEntry}" +
+                               " you want" +
+                               " to Edit?" +
+                               "\n0-Name, \n1-Link, \n2-Both, \n3-Exit Mode" +
+                               "\nChoose: "))
+        if choiceType == 3:
+            return playlist_tuples
+        if choiceType == 2:
+            print(
+                f"\n#{choiceEntry}- {name_arr[choiceEntry-1]}," +
+                f"{link_arr[choiceEntry-1]}" +
+                " :")
+            aux_line = input("\nEditing: ")
+            aux_arr = aux_line.split(",")
+            name_arr[choiceEntry-1] = aux_arr[0]
+            link_arr[choiceEntry-1] = aux_arr[1]
+            aux_tuple = (name_arr, link_arr)
+            choiceEnd = int(input("\nDo you want to edit anything else ?" +
+                                  " 0-No, 1-Yes: "))
+            if choiceEnd == 0:
+                return aux_tuple
+        if choiceType == 1:
+            print(
+                f"\n#{choiceEntry}- {name_arr[choiceEntry-1]}," +
+                "_____________" +
+                " :")
+            aux_line = input("\nEditing: ")
+            link_arr[choiceEntry-1] = aux_line
+            aux_tuple = (name_arr, link_arr)
+            choiceEnd = int(input("\nDo you want to edit anything else ?" +
+                                  " 0-No, 1-Yes: "))
+            if choiceEnd == 0:
+                return aux_tuple
+        if choiceType == 0:
+            print(
+                f"\n#{choiceEntry}- _______________," +
+                f"{link_arr[choiceEntry-1]}" +
+                " :")
+            aux_line = input("\nEditing: ")
+            name_arr[choiceEntry-1] = aux_line
+            aux_tuple = (name_arr, link_arr)
+            choiceEnd = int(input("\nDo you want to edit anything else ?" +
+                                  " 0-No, 1-Yes: "))
+            if choiceEnd == 0:
+                return aux_tuple
+        if choiceType > 3:
+            return playlist_tuples
+
+
 def create_json_config_file(configjson: json):
     filejson = open("config.json", "wt")
     filejson.writelines(configjson)
@@ -117,6 +180,17 @@ def split_array(string_arr) -> tuple:
     return (names_arr, links_arr)
 
 
+def jsonToTuple() -> tuple:
+    name_arr = []
+    link_arr = []
+    jsonFile = open("config.json", "rt")
+    jsonDict = json.load(jsonFile)
+    for n in jsonDict:
+        name_arr.append(n)
+        link_arr.append(jsonDict[n])
+    return (name_arr, link_arr)
+
+
 def choose_playlists():
     print("Choose the playlists names and their links to"
           + "be added to your config!")
@@ -137,6 +211,10 @@ def choose_playlists():
         if aux_final == 0:
             final = True
             aux_tuple = split_array(string_arr)
+            aux_last_edit = int(
+                input("Do you want to Edit anything ? 1-Yes,0-No"))
+            if aux_last_edit == 1:
+                aux_tuple = config_editing(aux_tuple)
             create_json_config_file(create_json_config(
                 config_dict_template(aux_tuple[0], aux_tuple[1])))
             print("Configurations Concluded!")
@@ -152,8 +230,23 @@ def new_user_workflow():
     return 0
 
 
+def old_user_options():
+    print("\nSelect What you want to do:")
+    print("\n1 - Listen to the Playlists. ")
+    print("\n2 - Edit Playlists")
+    print("\n0 - Exit Program")
+    choice = int(input("\nChoose: "))
+    if choice == 0:
+        os.system("pause")
+    if choice == 1:
+        playlist_seletor()
+    if choice == 2:
+        config_editing(jsonToTuple())
+
+
 def old_user_workflow():
     print("Welcome Back!")
+    old_user_options()
     return 0
 
 
@@ -166,8 +259,6 @@ def checking_workflow():
 
 def main():
     checking_workflow()
-    return 0
-# seletor()
 
 
 main()
