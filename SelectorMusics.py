@@ -147,10 +147,25 @@ def choose_playlists():
 
 
 def new_user_workflow():
+    print("Oh a new user! Welcome to Playlist Selector!\n")
+    choose_playlists()
     return 0
 
 
+def old_user_workflow():
+    print("Welcome Back!")
+    return 0
+
+
+def checking_workflow():
+    if os.path.exists('config.json') is True:
+        old_user_workflow()
+    else:
+        new_user_workflow()
+
+
 def main():
+    checking_workflow()
     return 0
 # seletor()
 
