@@ -3,27 +3,13 @@ import sys
 import platform
 import subprocess
 import shlex
+import json
 
 
 def execute_mpv_command(command):
-
-    process = subprocess.Popen(
+    _ = subprocess.Popen(
         command, shell=False,
         stdout=sys.stdout, stderr=sys.stderr).communicate()
-# process = subprocess.run(
-#     command, stdout=subprocess.PIPE, shell=True, text=True)
-# print(process.stdout)
-# while True:
-#     line = process.stdout
-#     if process.returncode == 0:
-#         print(process.returncode)
-#         break
-#     print(line)
-
-
-# def read_mpv_command(command):
-#     for path in execute_mpv_command(command):
-#         print(path)
 
 
 def seletor():
@@ -93,8 +79,80 @@ def seletor():
         os.system("pause")
 
 
+def create_json_config_file(configjson: json):
+    filejson = open("config.json", "wt")
+    filejson.writelines(configjson)
+    filejson.close()
+    return 0
+
+
+def create_json_config(configdict: dict) -> json:
+    configjson = json.dumps(configdict)
+    return configjson
+
+
+def config_dict_template(names_arr, links_arr) -> dict:
+    configdict = {}
+    i = 0
+    for name in names_arr:
+        configdict[name] = links_arr[i]
+        i += 1
+    return configdict
+
+
+def comma_verify(text):
+    if "," in text:
+        return text
+    else:
+        return 0
+
+
+def split_array(string_arr) -> tuple:
+    names_arr = []
+    links_arr = []
+    for string in string_arr:
+        aux_arr = string.split(",")
+        names_arr.append(aux_arr[0])
+        links_arr.append(aux_arr[1])
+    return (names_arr, links_arr)
+
+
+def choose_playlists():
+    print("Choose the playlists names and their links to"
+          + "be added to your config!")
+    print("\nPlease type the name and separate the link with a comma ',' :")
+    string_arr = []
+    final = False
+    index = 0
+    while not final:
+        buffer_values = input(f"\nPlaylist #{index}:")
+        if comma_verify(buffer_values) == 0:
+            print("Error you did not use any comma ',' ! Try Again.")
+            continue
+        string_arr.append(buffer_values)
+        index += 1
+        aux_final = int(
+            input("Want to Continue ? 0 to stop, 1 to continue: ")
+        )
+        if aux_final == 0:
+            final = True
+            aux_tuple = split_array(string_arr)
+            create_json_config_file(create_json_config(
+                config_dict_template(aux_tuple[0], aux_tuple[1])))
+            print("Configurations Concluded!")
+
+        if aux_final == 1:
+            final = False
+            print("Configurations Saved!\n")
+
+
+def new_user_workflow():
+    return 0
+
+
 def main():
-    seletor()
+    return 0
+# seletor()
 
 
 main()
