@@ -1,0 +1,1 @@
+Esse Programa precisa das versoes mais atualizadas do mpv e youtube-dl
