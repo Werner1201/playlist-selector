@@ -7,9 +7,13 @@ import json
 
 
 def execute_mpv_command(command):
+    sys.stdout.flush()
     _ = subprocess.Popen(
         command, shell=False,
         stdout=sys.stdout, stderr=sys.stderr).communicate()
+
+# TODO: Make this function Read the Json Config File and Print the List and
+# Execute mpv with the date from json.
 
 
 def playlist_seletor():
@@ -37,6 +41,10 @@ def playlist_seletor():
         commando = shlex.split(
             command + "list=PLiZj_IL8ze6Vp8-5ZgKagH-LuPor6BPic")
         execute_mpv_command(commando)
+        if platform.system() == 'Linux':
+            os.system('clear')
+        else:
+            os.system('cls')
         main()
 
     if escolha == 2:
@@ -45,6 +53,10 @@ def playlist_seletor():
             "list=PLiZj_IL8ze6XZkvrrxPO6LGVt1jj8TybQ")
 
         execute_mpv_command(commando)
+        if platform.system() == 'Linux':
+            os.system('clear')
+        else:
+            os.system('cls')
         main()
 
     if escolha == 3:
@@ -52,6 +64,10 @@ def playlist_seletor():
             command +
             "list=PLiZj_IL8ze6Visa1jD9zWhwO9og6z6uw_")
         execute_mpv_command(commando)
+        if platform.system() == 'Linux':
+            os.system('clear')
+        else:
+            os.system('cls')
         main()
 
     if escolha == 4:
@@ -59,6 +75,10 @@ def playlist_seletor():
             command +
             "list=PLiZj_IL8ze6U8rETvvf6DvszB83NQQmo1")
         execute_mpv_command(commando)
+        if platform.system() == 'Linux':
+            os.system('clear')
+        else:
+            os.system('cls')
         main()
 
     if escolha == 5:
@@ -66,13 +86,22 @@ def playlist_seletor():
             command +
             "list=PLiZj_IL8ze6VbQZdY-kFUpHKaB4qA7q2w")
         execute_mpv_command(commando)
+        if platform.system() == 'Linux':
+            os.system('clear')
+        else:
+            os.system('cls')
         main()
 
     if escolha == 6:
         commando = shlex.split(
             command +
             "list=PLiZj_IL8ze6Um1PLTpHq8KoLltPJ_m043")
+
         execute_mpv_command(commando)
+        if platform.system() == 'Linux':
+            os.system('clear')
+        else:
+            os.system('cls')
         main()
 
     if escolha == 0 or escolha > 6:
